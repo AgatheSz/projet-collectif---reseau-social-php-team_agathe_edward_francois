@@ -20,24 +20,7 @@ if (!isset($_SESSION['connected_id'])){
         include_once 'header.php';
         ?>
         <div id="wrapper" >
-        <!-- <header>
-            <img src="resoc.jpg" alt="Logo de notre réseau social"/>
-            <nav id="menu">
-                <a href="news.php">Actualités</a>
-                <a href="wall.php?user_id=5">Mur</a>
-                <a href="feed.php?user_id=5">Flux</a>
-                <a href="tags.php?tag_id=1">Mots-clés</a>
-            </nav>
-            <nav id="user">
-                <a href="#">Profil</a>
-                <ul>
-                    <li><a href="settings.php?user_id=5">Paramètres</a></li>
-                    <li><a href="followers.php?user_id=5">Mes suiveurs</a></li>
-                    <li><a href="subscriptions.php?user_id=5">Mes abonnements</a></li>
-                </ul>
-
-            </nav>
-        </header> -->
+        
         <div id="wrapper">
             <?php
             /**
@@ -65,13 +48,12 @@ if (!isset($_SESSION['connected_id'])){
                 $lesInformations = $mysqli->query($laQuestionEnSql);
                 $user = $lesInformations->fetch_assoc();
                 //@todo: afficher le résultat de la ligne ci dessous, remplacer XXX par l'alias et effacer la ligne ci-dessous
-                // echo "<pre>" . print_r($user, 1) . "</pre>";
-                //echo "<pre>" . print_r($_SESSION, 1) . "</pre>";
+                
                 ?>
                 <div style="display: flex; flex-direction: column; align-items: center;">
                 <img src="User1.jpg" alt="Portrait de l'utilisatrice" style="border-radius: 50%;">
                 <p id="nom" style="text-align: center; text-transform: uppercase; font-weight: bold;"><?php echo $user['alias'];?></p>
-  
+
                 </div>
                 <section>
                     
@@ -151,40 +133,25 @@ if (!isset($_SESSION['connected_id'])){
                     $enCoursDeTraitement = isset($_POST['auteur']);
                     if ($enCoursDeTraitement)
                     {
-                        // on ne fait ce qui suit que si un formulaire a été soumis.
-                        // Etape 2: récupérer ce qu'il y a dans le formulaire @todo: c'est là que votre travaille se situe
-                        // observez le résultat de cette ligne de débug (vous l'effacerez ensuite)
-                        // echo "<pre>" . print_r($_POST, 1) . "</pre>";
-                        // et complétez le code ci dessous en remplaçant les ???
-                        $authorId = $_POST['auteur'];
-                        $postContent = $_POST['message'];
+                        
+                        $authorId = intval($_POST['auteur']);
+                        $postContent = $mysqli->real_escape_string($_POST['message']);
 
 
                         //Etape 3 : Petite sécurité
                         // pour éviter les injection sql : https://www.w3schools.com/sql/sql_injection.asp
+                        
                         $authorId = intval($mysqli->real_escape_string($authorId));
                         $postContent = $mysqli->real_escape_string($postContent);
+
                         //Etape 4 : construction de la requete
-                        // $lInstructionSql = "INSERT INTO posts "
-                        //         . "(id, user_id, content, created, permalink, post_id) "
-                        //         . "VALUES (NULL, "
-                        //         . $authorId . ", "
-                        //         . "'" . $postContent . "', "
-                        //         . "NOW(), "
-                        //         . "'', "
-                        //         . "NULL);"
-                        //         ;
-                            $lInstructionSql = "INSERT INTO posts "
-                                . "(id, user_id, content, created, parent_id) "
-                                . "VALUES (NULL, "
-                                . $authorId . ", "
-                                . "'" . $postContent . "', "
-                                . "NOW(), "
-                                . "NULL);"
-                                ;
-                        // echo $lInstructionSql;
+                        
+                        $lInstructionSql = "INSERT INTO posts (id, user_id, content, created, parent_id) VALUES (NULL, ?, ?, NOW(), NULL)";
+                        $laQuestionEnSql = $mysqli->prepare($lInstructionSql);
+                        $laQuestionEnSql->bind_param("is", $authorId, $postContent);
+                        $ok = $laQuestionEnSql->execute();
                         // Etape 5 : execution
-                        $ok = $mysqli->query($lInstructionSql);
+                        // $ok = $mysqli->query($lInstructionSql);
                         if ( ! $ok)
                         {
                             echo "Impossible d'ajouter le message: " . $mysqli->error;

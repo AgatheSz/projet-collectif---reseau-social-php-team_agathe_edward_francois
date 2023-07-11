@@ -63,7 +63,7 @@ if (!isset($_SESSION['connected_id'])){
                     $lesInformations = $laQuestionEnSql->get_result();
 
                     // $lesInformations = $mysqli->query($laQuestionEnSql);
-               
+            
                 //@todo: faire la boucle while de parcours des abonnés et mettre les bonnes valeurs ci dessous 
                 while ($user = $lesInformations->fetch_assoc())
                 { ?>

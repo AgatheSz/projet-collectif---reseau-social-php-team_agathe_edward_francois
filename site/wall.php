@@ -178,7 +178,7 @@ if (!isset($_SESSION['connected_id'])){
                 /**
                  * Etape 3: récupérer tous les messages de l'utilisatrice
                  */
-                $laQuestionEnSql = "
+                $laQuestionEnSql = $mysqli ->prepare( "
                     SELECT posts.content, posts.created, users.alias as author_name, tags.id as tagId,
                     COUNT(likes.id) as like_number, GROUP_CONCAT(DISTINCT tags.label) AS taglist 
                     FROM posts
@@ -189,8 +189,12 @@ if (!isset($_SESSION['connected_id'])){
                     WHERE posts.user_id='$userId' 
                     GROUP BY posts.id, tags.id
                     ORDER BY posts.created DESC  
-                    ";
-                $lesInformations = $mysqli->query($laQuestionEnSql);
+                    ");
+                    $laQuestionEnSql->bind_param("i", $userId);
+                    $laQuestionEnSql->execute();
+                    $lesInformations = $laQuestionEnSql->get_result();
+
+                // $lesInformations = $mysqli->query($laQuestionEnSql);
                 if ( ! $lesInformations)
                 {
                     echo("Échec de la requete : " . $mysqli->error);

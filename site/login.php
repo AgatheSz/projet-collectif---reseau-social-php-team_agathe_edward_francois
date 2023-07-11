@@ -57,7 +57,11 @@ session_start();
                                 . "email LIKE '" . $emailAVerifier . "'"
                                 ;
                         // Etape 6: Vérification de l'utilisateur
-                        $res = $mysqli->query($lInstructionSql);
+                        $stmt = $mysqli->prepare($lInstructionSql);
+                        $stmt ->bind_param("s", $emailAVerifier);
+                        $stmt ->execute();
+                        $res = $stmt->get_result();
+
                         $user = $res->fetch_assoc();
                         if ( ! $user OR $user["password"] != $passwdAVerifier)
                         {

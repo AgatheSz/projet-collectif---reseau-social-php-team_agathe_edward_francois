@@ -49,13 +49,7 @@ if (!isset($_SESSION['connected_id'])){
             </aside>
             <main>
                 <?php
-                /**
-                 * Etape 1: Les paramètres concernent une utilisatrice en particulier
-                 * La première étape est donc de trouver quel est l'id de l'utilisatrice
-                 * Celui ci est indiqué en parametre GET de la page sous la forme user_id=...
-                 * Documentation : https://www.php.net/manual/fr/reserved.variables.get.php
-                 * ... mais en résumé c'est une manière de passer des informations à la page en ajoutant des choses dans l'url
-                 */
+                
                 $userId = intval($_GET['user_id']);
 
                 /**
@@ -66,6 +60,8 @@ if (!isset($_SESSION['connected_id'])){
                 /**
                  * Etape 3: récupérer le nom de l'utilisateur
                  */
+                $userId = intval($_GET['user_id']);
+
                 $laQuestionEnSql = "
                     SELECT users.*, 
                     count(DISTINCT posts.id) as totalpost, 
@@ -78,16 +74,19 @@ if (!isset($_SESSION['connected_id'])){
                     WHERE users.id = '$userId' 
                     GROUP BY users.id
                     ";
-                $lesInformations = $mysqli->query($laQuestionEnSql);
+
+                    // Utilisation d'une requête préparée avec un paramètre lié
+                $stmt = $mysqli->prepare($laQuestionEnSql);
+                $stmt->bind_param("i", $userId);
+                $stmt->execute();
+                $lesInformations = $stmt->get_result();
+
                 if ( ! $lesInformations)
                 {
                     echo("Échec de la requete : " . $mysqli->error);
                 }
                 $user = $lesInformations->fetch_assoc();
 
-                /**
-                 * Etape 4: à vous de jouer
-                 */
                 //@todo: afficher le résultat de la ligne ci dessous, remplacer les valeurs ci-après puiseffacer la ligne ci-dessous
                 // echo "<pre>" . print_r($user, 1) . "</pre>";
                 ?>                

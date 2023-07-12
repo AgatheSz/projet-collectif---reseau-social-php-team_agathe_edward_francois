@@ -42,8 +42,13 @@ if (!isset($_SESSION['connected_id'])){
                     WHERE followers.following_user_id='$userId'
                     GROUP BY users.id
                     ";
-                $lesInformations = $mysqli->query($laQuestionEnSql);
-                // Etape 4: à vous de jouer
+
+                    // Utilisation d'une requête préparée avec un paramètre lié
+                    $stmt = $mysqli->prepare($laQuestionEnSql);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $lesInformations = $stmt->get_result();
+            
                 //@todo: faire la boucle while de parcours des abonnés et mettre les bonnes valeurs ci dessous 
                 while ($user = $lesInformations->fetch_assoc())
                 {?>

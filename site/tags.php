@@ -23,14 +23,10 @@ if (!isset($_SESSION['connected_id'])){
         
         <div id="wrapper">
             <?php
-            /**
-             * Cette page est similaire à wall.php ou feed.php 
-             * mais elle porte sur les mots-clés (tags)
-             */
-            /**
-             * Etape 1: Le mur concerne un mot-clé en particulier
-             */
-            $tagId = intval($_GET['tag_id']);
+            
+            //  * Etape 1: Le mur concerne un mot-clé en particulier
+            
+        
             ?>
             <?php
             /**
@@ -44,6 +40,8 @@ if (!isset($_SESSION['connected_id'])){
                 /**
                  * Etape 3: récupérer le nom du mot-clé
                  */
+
+                $tagId = intval($_GET['tag_id']);
                 $laQuestionEnSql = "SELECT * FROM tags WHERE id= '$tagId' ";
                 $lesInformations = $mysqli->query($laQuestionEnSql);
                 $tag = $lesInformations->fetch_assoc();
@@ -90,10 +88,11 @@ if (!isset($_SESSION['connected_id'])){
                 while ($post = $lesInformations->fetch_assoc())
                 {
 
-                    // echo "<pre>" . print_r($post, 1) . "</pre>";
+                
                     ?>                
                     <article>
                         <h3>
+                        <?php $created = mysqli_real_escape_string($mysqli, $post['created']); ?>
                             <time datetime='2020-02-01 11:12:13' ><?php echo($post['created'])?></time>
                         </h3>
                         <address><a href = "wall.php?user_id=<?php echo($post['id'])?>"><?php echo($post['author_name'])?></a></address>
